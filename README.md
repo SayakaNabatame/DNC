@@ -1,2 +1,2 @@
 # DNC
-Neural Turing Machine for a MPSoC verified with UVM/OSVVM/FV
+Differentiable Neural Machine for a MPSoC verified with UVM/OSVVM/FV
