@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,80 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+classdef TensorArithmetic
+  methods
+    function DATA_OUT = ntm_tensor_adder(DATA_A_IN, DATA_B_IN)
+      % Constants
+      [SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN] = size(DATA_A_IN);
+      [SIZE_B_I_IN, SIZE_B_J_IN, SIZE_B_K_IN] = size(DATA_B_IN);
+
+      % Signals
+      DATA_OUT = zeros(SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN);
+
+      % Body
+      for i = 1:SIZE_A_I_IN
+        for j = 1:SIZE_A_J_IN
+          for k = 1:SIZE_A_K_IN
+            DATA_OUT(i, j, k) = DATA_A_IN(i, j, k) + DATA_B_IN(i, j, k);
+          end
+        end
+      end
+    end
+
+    function DATA_OUT = ntm_tensor_subtractor(DATA_A_IN, DATA_B_IN)
+      % Constants
+      [SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN] = size(DATA_A_IN);
+      [SIZE_B_I_IN, SIZE_B_J_IN, SIZE_B_K_IN] = size(DATA_B_IN);
+
+      % Signals
+      DATA_OUT = zeros(SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN);
+
+      % Body
+      for i = 1:SIZE_A_I_IN
+        for j = 1:SIZE_A_J_IN
+          for k = 1:SIZE_A_K_IN
+            DATA_OUT(i, j, k) = DATA_A_IN(i, j, k) - DATA_B_IN(i, j, k);
+          end
+        end
+      end
+    end
+
+    function DATA_OUT = ntm_tensor_multiplier(DATA_A_IN, DATA_B_IN)
+      % Constants
+      [SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN] = size(DATA_A_IN);
+      [SIZE_B_I_IN, SIZE_B_J_IN, SIZE_B_K_IN] = size(DATA_B_IN);
+
+      % Signals
+      DATA_OUT = zeros(SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN);
+
+      % Body
+      for i = 1:SIZE_A_I_IN
+        for j = 1:SIZE_A_J_IN
+          for k = 1:SIZE_A_K_IN
+            DATA_OUT(i, j, k) = DATA_A_IN(i, j, k) * DATA_B_IN(i, j, k);
+          end
+        end
+      end
+    end
+
+    function DATA_OUT = ntm_tensor_divider(DATA_A_IN, DATA_B_IN)
+      % Constants
+      [SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN] = size(DATA_A_IN);
+      [SIZE_B_I_IN, SIZE_B_J_IN, SIZE_B_K_IN] = size(DATA_B_IN);
+
+      % Signals
+      DATA_OUT = zeros(SIZE_A_I_IN, SIZE_A_J_IN, SIZE_A_K_IN);
+
+      % Body
+      for i = 1:SIZE_A_I_IN
+        for j = 1:SIZE_A_J_IN
+          for k = 1:SIZE_A_K_IN
+            DATA_OUT(i, j, k) = DATA_A_IN(i, j, k) / DATA_B_IN(i, j, k);
+          end
+        end
+      end
+    end
+  end
+end

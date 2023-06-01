@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(k)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -37,10 +38,32 @@
 ## THE SOFTWARE.                                                                 ##
 ##                                                                               ##
 ## ============================================================================= ##
-## Author(s):                                                                    ##
+## Author(k):                                                                    ##
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function W_OUT = ntm_fnn_w_trainer(X_IN, H_IN, LENGTH_IN)
+  % Constants
+  [SIZE_T_IN, SIZE_X_IN] = size(X_IN);
+
+  [~, SIZE_L_IN] = size(H_IN);
+
+  % Output Signals
+  W_OUT = zeros(SIZE_L_IN, SIZE_X_IN);
+
+  % Body
+  % dW(l;x) = summation(d*(t;l) · x(t;x))[t in 0 to T]
+  vector_dh_int = ntm_vector_controller_differentiation(H_IN, LENGTH_IN);
+
+  for t = 1:SIZE_T_IN
+    for l = 1:SIZE_L_IN
+      for x = 1:SIZE_X_IN
+        scalar_operation_int = vector_dh_int(t, l)*X_IN(t, x);
+
+        W_OUT(l, x) = W_OUT(l, x) + scalar_operation_int;
+      end
+    end
+  end
+end

@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,35 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function L_OUT = dnc_temporal_link_matrix(L_IN, W_IN, P_IN)
+  % Constants
+  SIZE_N_IN = length(W_IN);
+
+  % Internal Signals
+  matrix_w_i_int = zeros(SIZE_N_IN, SIZE_N_IN);
+  matrix_w_j_int = zeros(SIZE_N_IN, SIZE_N_IN);
+
+  % Body
+  % L(t)[g;j] = (1 - w(t;j)[i] - w(t;j)[j])·L(t-1)[g;j] + w(t;j)[i]·p(t-1;j)[j]
+
+  % L(t=0)[g,j] = 0
+
+  for g = 1:SIZE_N_IN
+    for j = 1:SIZE_N_IN
+      matrix_w_i_int(g, j) = W_IN(g);
+      matrix_w_j_int(g, j) = W_IN(j);
+    end
+  end
+
+  matrix_first_operation_int = ones(SIZE_N_IN, SIZE_N_IN) - matrix_w_i_int;
+
+  matrix_first_operation_int = matrix_first_operation_int - matrix_w_j_int;
+
+  matrix_first_operation_int = matrix_first_operation_int.*L_IN;
+
+  matrix_second_operation_int = ntm_transpose_vector_product(W_IN, P_IN);
+
+  L_OUT = matrix_first_operation_int + matrix_second_operation_int;
+end

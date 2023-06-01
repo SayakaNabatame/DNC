@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,14 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function [W_OUT, K_OUT, V_OUT, D_OUT, U_OUT, B_OUT] = ntm_fnn_trainer(X_IN, R_IN, XI_IN, RHO_IN, H_IN, LENGTH_IN)
+  % Body
+  W_OUT = ntm_fnn_w_trainer(X_IN, H_IN, LENGTH_IN);
+  K_OUT = ntm_fnn_k_trainer(R_IN, H_IN, LENGTH_IN);
+  V_OUT = ntm_fnn_v_trainer(XI_IN, H_IN, LENGTH_IN);
+  D_OUT = ntm_fnn_d_trainer(RHO_IN, H_IN, LENGTH_IN);
+  U_OUT = ntm_fnn_u_trainer(H_IN, LENGTH_IN);
+  B_OUT = ntm_fnn_b_trainer(H_IN, LENGTH_IN);
+end

@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,58 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function DATA_OUT = ntm_tensor_inverse(DATA_IN)
+  % Constants
+  [SIZE_I_IN, SIZE_J_IN, SIZE_K_IN] = size(DATA_IN);
+
+  % Body
+  eye_3d = zeros(SIZE_I_IN, SIZE_J_IN, SIZE_K_IN);
+
+  for i = 1:SIZE_I_IN
+    for j = 1:SIZE_J_IN
+      for k = 1:SIZE_K_IN
+        if (i == j) && (j == k) && (k == i)
+          eye_3d(i, j, k) = 1;
+        else
+          eye_3d(i, j, k) = 0;
+        end
+      end
+    end
+  end
+
+  data_int = zeros(SIZE_I_IN, SIZE_J_IN, 2*SIZE_K_IN);
+
+  for i = 1:SIZE_I_IN
+    for j = 1:SIZE_J_IN
+      for k = 1:SIZE_K_IN
+        data_int(i, j, k) = DATA_IN(i, j, k);
+      end
+    end
+  end
+
+  for i = 1:SIZE_I_IN
+    for j = 1:SIZE_J_IN
+      for k = SIZE_K_IN + 1:2*SIZE_K_IN
+        data_int(i, j, k) = eye_3d(i, j, k-SIZE_K_IN);
+      end
+    end
+  end
+
+  for i = 1:SIZE_I_IN
+    data_int(i, :, :) = data_int(i, :, :)/data_int(i, i, i);
+
+    for m = i:SIZE_I_IN - 1
+      data_int(m + 1, :, :) = data_int(m + 1, :, :) - data_int(i, :, :)*data_int(m + 1, i, i);
+    end
+  end
+
+  for i = 2:SIZE_I_IN
+    for m = (i - 1): - 1:1
+      data_int(m, :, :) = data_int(m, :, :) - data_int(i, :, :)*data_int(m, i, i);
+    end
+  end
+
+  DATA_OUT = data_int(:, :, SIZE_K_IN + 1:2*SIZE_K_IN);
+end

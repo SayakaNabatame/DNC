@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,29 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function P_OUT = dnc_precedence_weighting(W_IN, P_IN)
+  % Constants
+  SIZE_N_IN = length(W_IN);
+
+  % Internal Signals
+  vector_operation_int = zeros(SIZE_N_IN, 1);
+
+  % Body
+  % p(t;j) = (1 - summation(w(t;j))[j in 1 to N])·p(t-1;j) + w(t;j)
+
+  % p(t=0) = 0
+
+  data_summation_int = ntm_scalar_summation(W_IN);
+
+  for j = 1:SIZE_N_IN
+    vector_operation_int(j) = data_summation_int;
+  end
+
+  vector_operation_int = ones(SIZE_N_IN, 1) - vector_operation_int;
+
+  vector_operation_int = vector_operation_int.*P_IN;
+
+  P_OUT = vector_operation_int + W_IN;
+end

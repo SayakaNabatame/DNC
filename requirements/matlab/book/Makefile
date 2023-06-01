@@ -9,14 +9,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              The M Programming Language                                       ##
+##              QueenField                                                       ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2022-2023 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -42,5 +42,52 @@
 ##                                                                               ##
 ###################################################################################
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+SOURCE_DOCS := $(wildcard *.md)
+SOURCE_DOCS := $(filter-out metadata.md, $(SOURCE_DOCS))
+
+EXPORTED_DOCS=\
+ $(SOURCE_DOCS:.md=.html) \
+ $(SOURCE_DOCS:.md=.pdf)  \
+ $(SOURCE_DOCS:.md=.docx) \
+ $(SOURCE_DOCS:.md=.epub)
+
+PANDOC_OPTIONS=-f markdown       \
+    --table-of-contents          \
+    --toc-depth=6                \
+    --number-sections            \
+    --pdf-engine=xelatex         \
+    -V lof=yes                   \
+    -V lot=yes                   \
+    -V fontsize="10pt"           \
+    -V documentclass=report      \
+    -V papersize=A4              \
+    -V linestretch='1'           \
+    -V geometry:margin=2cm       \
+    -V links-as-notes=true       \
+    --metadata-file=metadata.md
+
+PANDOC_HTML_OPTIONS=--to html5
+PANDOC_PDF_OPTIONS=
+PANDOC_DOCX_OPTIONS=
+PANDOC_EPUB_OPTIONS=--to epub3
+
+# Pattern-Matching Rules
+
+%.html : %.md
+	pandoc -s $(shell cat $<) $(PANDOC_OPTIONS) $(PANDOC_HTML_OPTIONS) -o $@
+
+%.pdf : %.md
+	pandoc -s $(shell cat $<) $(PANDOC_OPTIONS) $(PANDOC_PDF_OPTIONS) -o $@
+
+%.docx : %.md
+	pandoc -s $(shell cat $<) $(PANDOC_OPTIONS) $(PANDOC_DOCX_OPTIONS) -o $@
+
+%.epub : %.md
+	pandoc -s $(shell cat $<) $(PANDOC_OPTIONS) $(PANDOC_EPUB_OPTIONS) -o $@
+
+all : $(EXPORTED_DOCS)
+
+clean:
+	-rm -f $(EXPORTED_DOCS)
+
+.PHONY: clean

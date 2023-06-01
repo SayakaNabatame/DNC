@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,24 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function Y_OUT = dnc_output_vector(P_IN, R_IN, Q_IN, H_IN)
+  % Constants
+  [SIZE_R_IN, SIZE_Y_IN, ~] = size(P_IN);
+
+  % Body
+  % y(t;y) = P(i;y;k)·r(t;i;k) + Q(y;l)·h(t;l)
+
+  % Q(y;l)·h(t;l)
+  Y_OUT = ntm_matrix_vector_product(Q_IN, H_IN);
+
+  % P(i;y;k)·r(t;i;k)
+  matrix_operation_int = ntm_tensor_matrix_product(P_IN, R_IN);
+  
+  for y = 1:SIZE_Y_IN
+    for i = 1:SIZE_R_IN
+      Y_OUT(y) = Y_OUT(y) + matrix_operation_int(i, y);
+    end
+  end
+end

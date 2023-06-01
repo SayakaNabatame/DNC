@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,27 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function PSI_OUT = dnc_memory_retention_vector(W_IN, F_IN)
+  % Constants
+  [SIZE_R_IN, SIZE_N_IN] = size(W_IN);
+
+  % Internal Signals
+  matrix_operation_int = zeros(SIZE_R_IN, SIZE_N_IN);
+
+  % Body
+  % psi(t;j) = multiplication(1 - f(t;i)·w(t-1;i;j))[i in 1 to R]
+
+  vector_operation_int = ones(SIZE_R_IN, 1) - F_IN;
+
+  for i = 1:SIZE_R_IN
+    for j = 1:SIZE_N_IN
+      matrix_operation_int(i, j) = vector_operation_int(i);
+    end
+  end
+
+  matrix_operation_int = matrix_operation_int.*W_IN;
+
+  PSI_OUT = ntm_vector_summation(matrix_operation_int);
+end

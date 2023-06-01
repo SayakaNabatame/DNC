@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,22 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function DATA_C_OUT = ntm_state_matrix_output(DATA_K_IN, DATA_C_IN, DATA_D_IN)
+  % Constants
+  % SIZE: A[N,N]; B[N,P]; C[Q,N]; D[Q,P];
+  % SIZE: K[P,P]; x[N,1]; y[Q,1]; u[P,1];
+
+  [SIZE_D_I_IN, SIZE_D_J_IN] = size(DATA_D_IN);
+
+  % Body
+  % c = inv(I + D·K)·C
+  matrix_operation_int = ntm_matrix_product(DATA_D_IN, DATA_K_IN);
+
+  matrix_operation_int = ntm_matrix_adder(eye(SIZE_D_I_IN, SIZE_D_J_IN), matrix_operation_int);
+
+  matrix_operation_int = ntm_matrix_inverse(matrix_operation_int);
+
+  DATA_C_OUT = ntm_matrix_product(matrix_operation_int, DATA_C_IN);
+end

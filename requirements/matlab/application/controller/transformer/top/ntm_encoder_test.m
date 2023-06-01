@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,43 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+% Package
+addpath(genpath('../../../../library/math/algebra/matrix'));
+addpath(genpath('../../../../library/math/calculus/matrix'));
+addpath(genpath('../../../../library/math/function/vector'));
+addpath(genpath('../../../../library/math/statitics/vector'));
+
+addpath(genpath('../../../../library/controller/transformer/inputs'));
+addpath(genpath('../../../../library/controller/transformer/components'));
+addpath(genpath('../../../../library/controller/transformer/functions'));
+addpath(genpath('../../../../library/controller/transformer/fnn'));
+addpath(genpath('../../../../library/controller/transformer/top'));
+
+% Constants
+SIZE_L_IN = 3;
+SIZE_N_IN = 3;
+SIZE_D_IN = 3;
+SIZE_M_IN = 3;
+SIZE_K_IN = 3;
+SIZE_V_IN = 3;
+SIZE_H_IN = 3;
+
+% Signals
+K_IN = rand(SIZE_H_IN, SIZE_D_IN, SIZE_K_IN);
+Q_IN = rand(SIZE_H_IN, SIZE_D_IN, SIZE_K_IN);
+V_IN = rand(SIZE_H_IN, SIZE_D_IN, SIZE_V_IN);
+
+W_OH_IN = rand(SIZE_H_IN*SIZE_V_IN, SIZE_D_IN);
+
+W1_IN = rand(SIZE_M_IN, SIZE_D_IN);
+B1_IN = rand(SIZE_M_IN, 1);
+
+W2_IN = rand(SIZE_D_IN, SIZE_M_IN);
+B2_IN = rand(SIZE_D_IN, 1);
+
+X_IN = rand(SIZE_L_IN, SIZE_N_IN, SIZE_D_IN);
+
+% DUT
+Z_OUT = ntm_encoder(K_IN, Q_IN, V_IN, W_OH_IN, W1_IN, B1_IN, W2_IN, B2_IN, X_IN);

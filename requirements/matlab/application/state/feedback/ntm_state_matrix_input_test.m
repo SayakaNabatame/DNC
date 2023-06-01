@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,27 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+% Package
+addpath(genpath('../../../library/arithmetic/matrix'));
+addpath(genpath('../../../library/math/algebra/matrix'));
+
+addpath(genpath('../../../library/state/feedback'));
+
+% Constants
+SIZE_N_IN = 3;
+SIZE_P_IN = 3;
+SIZE_Q_IN = 3;
+
+% Signals
+DATA_K_IN = [0.8334, 0.8499, 0.4069; 0.3961, 0.6429, 0.1376; 0.5145, 0.1792, 0.5457];
+DATA_B_IN = [0.1786, 0.1327, 0.2872; 0.6814, 0.1739, 0.4270; 0.8388, 0.4361, 0.1429];
+DATA_D_IN = [0.4134, 0.9401, 0.3017; 0.0990, 0.0800, 0.1841; 0.9090, 0.0997, 0.1913];
+
+DATA_B_OUT = [ 1.102223719844281e-02,  1.822992438283454e-03,  2.176719190096641e-01
+               3.117582341989792e-01, -1.675722187025189e-01,  2.474342499574794e-01
+               4.934262872567298e-01,  2.816262418507950e-02, -8.062666268832278e-02];
+
+% DUT
+assert(ntm_state_matrix_input(DATA_K_IN, DATA_B_IN, DATA_D_IN), DATA_B_OUT, 1e-6);

@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,49 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function I_OUT = ntm_input_gate_vector(W_IN, K_IN, V_IN, D_IN, U_IN, B_IN, R_IN, XI_IN, RHO_IN, H_IN, X_IN)
+  % Constants
+  [SIZE_R_IN, SIZE_L_IN, ~] = size(K_IN);
+
+  % Body
+  % i(t;l) = sigmoid(W(l;x)*x(t;x) + K(i;l;k)*r(t;i;k) + D(i;l;m)*rho(t;i;m) + V(l;s)*xi(t;s) + U(l;l)*h(t-1;l) + b(l))
+  
+  % W(l;x)*x(t;x)
+  vector_operation_int = ntm_matrix_vector_convolution(W_IN, X_IN);
+
+  % K(i;l;k)*r(t;i;k)
+  matrix_operation_int = ntm_tensor_matrix_convolution(K_IN, R_IN);
+
+  for l = 1:SIZE_L_IN
+    for i = 1:SIZE_R_IN
+      vector_operation_int(l) = vector_operation_int(l) + matrix_operation_int(i, l);
+    end
+  end
+
+  % D(i;l;m)*rho(t;i;m)
+  matrix_operation_int = ntm_tensor_matrix_convolution(D_IN, RHO_IN);
+
+  for l = 1:SIZE_L_IN
+    for i = 1:SIZE_R_IN
+      vector_operation_int(l) = vector_operation_int(l) + matrix_operation_int(i, l);
+    end
+  end
+
+  % b(l)
+  I_OUT = vector_operation_int + B_IN;
+
+  % V(l;s)*xi(t;s)
+  vector_operation_int = ntm_matrix_vector_convolution(V_IN, XI_IN);
+
+  I_OUT = I_OUT + vector_operation_int;
+
+  % U(l;l)*h(t-1;l)
+  vector_operation_int = ntm_matrix_vector_convolution(U_IN, H_IN);
+
+  I_OUT = I_OUT + vector_operation_int;
+
+  % sigmoid(.)
+  I_OUT = ntm_vector_logistic_function(I_OUT);
+end

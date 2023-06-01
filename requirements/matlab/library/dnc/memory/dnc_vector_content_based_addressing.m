@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,32 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function C_OUT = dnc_vector_content_based_addressing(K_IN, BETA_IN, M_IN)
+  % Constants
+  [SIZE_N_IN, SIZE_W_IN] = size(M_IN);
+
+  % Internal Signals
+  vector_beta_int = zeros(SIZE_N_IN, 1);
+
+  vector_j_operation_int = zeros(SIZE_N_IN, 1);
+  vector_k_operation_int = zeros(SIZE_W_IN, 1);
+
+  % Body
+  % C(M[j,·],k,beta)[j] = softmax(cosine_similarity(k,M[j,·])·beta)[j]
+
+  for j = 1:SIZE_N_IN
+    vector_beta_int(j) = BETA_IN;
+
+    for k = 1:SIZE_W_IN
+      vector_k_operation_int(k) = M_IN(j, k);
+    end
+
+    vector_j_operation_int(j) = ntm_vector_cosine_similarity(K_IN, vector_k_operation_int);
+  end
+
+  vector_j_operation_int = vector_j_operation_int.*vector_beta_int;
+
+  C_OUT = ntm_vector_softmax(vector_j_operation_int);
+end

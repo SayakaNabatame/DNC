@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,31 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function B_OUT = ntm_lstm_activation_b_trainer(A_IN, I_IN, F_IN, O_IN, S_IN, H_IN, LENGTH_IN)
+  % Constants
+  [SIZE_T_IN, SIZE_L_IN] = size(A_IN);
+
+  % Output Signals
+  B_OUT = zeros(SIZE_L_IN);
+
+  % Body
+  % ds(t;l) = dh(t;l) o o(t;l) o (1 - (tanh(s(t;l)))^2) + ds(t+1;l) + f(t+1;l)
+  vector_dh_int = ntm_vector_controller_differentiation(H_IN, LENGTH_IN);
+  vector_ds_int = ntm_vector_controller_differentiation(S_IN, LENGTH_IN);
+
+  vector_ds_int = vector_dh_int.*O_IN.*(1-tanh(S_IN).^2) + vector_ds_int + F_IN;
+
+  % da(t;l) = ds(t;l) o i(t;l) o (1 - a(t;l)^2)
+  vector_da_int = vector_ds_int.*I_IN.*(1-A_IN).^2;
+
+  % db(l) = summation(da(t+1+;l))[t in 0 to T]
+  for t = 1:SIZE_T_IN
+    for l = 1:SIZE_L_IN
+      scalar_operation_int = vector_da_int(t, l);
+
+      B_OUT(l) = B_OUT(l) + scalar_operation_int;
+    end
+  end
+end

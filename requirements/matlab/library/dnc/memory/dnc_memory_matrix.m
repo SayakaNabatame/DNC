@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,22 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function M_OUT = dnc_memory_matrix(M_IN, W_IN, V_IN, E_IN)
+  % Constants
+  [SIZE_N_IN, SIZE_W_IN] = size(M_IN);
+
+  % Body
+  % M(t;j;k) = M(t-1;j;k) o (E - w(t;j)·transpose(e(t;k))) + w(t;j)·transpose(v(t;k))
+
+  matrix_first_operation_int = ntm_transpose_vector_product(W_IN, E_IN);
+
+  matrix_second_operation_int = ones(SIZE_N_IN, SIZE_W_IN) - matrix_first_operation_int;
+
+  matrix_first_operation_int = M_IN.*matrix_second_operation_int;
+
+  matrix_second_operation_int = ntm_transpose_vector_product(W_IN, V_IN);
+
+  M_OUT = matrix_first_operation_int + matrix_second_operation_int;
+end

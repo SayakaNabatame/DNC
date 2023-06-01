@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,23 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function DATA_OUT = ntm_matrix_deviation(DATA_IN, MEAN_IN)
+  % Constants
+  [SIZE_I_IN, SIZE_J_IN, LENGTH_IN] = size(DATA_IN);
+
+  % Signals
+  DATA_OUT = zeros(SIZE_I_IN, SIZE_J_IN);
+
+  % Body
+  for i = 1:SIZE_I_IN
+    for j = 1:SIZE_J_IN
+      for m = 1:LENGTH_IN
+        DATA_OUT(i, j) = DATA_OUT(i, j) + (DATA_IN(i, j, m) - MEAN_IN(i, j))^2/(LENGTH_IN-1);
+      end
+    end
+  end
+
+  DATA_OUT = sqrt(DATA_OUT);
+end

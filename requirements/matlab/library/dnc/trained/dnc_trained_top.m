@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,38 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function Y_OUT = dnc_trained_top(X_IN)
+  % Constants
+  LENGTH_IN = 3;
+
+  SIZE_T_IN = 3;
+  SIZE_X_IN = 3;
+  SIZE_Y_IN = 3;
+  SIZE_N_IN = 3;
+  SIZE_W_IN = 3;
+  SIZE_L_IN = 3;
+  SIZE_R_IN = 3;
+
+  SIZE_S_IN = 3*SIZE_W_IN + 3;
+  SIZE_M_IN = SIZE_W_IN + 5;
+
+  % Signals
+  P_IN = rand(SIZE_R_IN, SIZE_Y_IN, SIZE_W_IN);
+  Q_IN = rand(SIZE_Y_IN, SIZE_L_IN);
+
+  w_int = rand(SIZE_L_IN, SIZE_X_IN);
+  k_int = rand(SIZE_R_IN, SIZE_L_IN, SIZE_X_IN);
+  v_int = rand(SIZE_L_IN, SIZE_S_IN);
+  d_int = rand(SIZE_R_IN, SIZE_L_IN, SIZE_M_IN);
+  u_int = rand(SIZE_L_IN, SIZE_L_IN);
+  b_int = rand(SIZE_L_IN, 1);
+
+  % Body
+  [Y_OUT, R_OUT, XI_OUT, RHO_OUT, H_OUT] = dnc_interface_top(w_int, k_int, v_int, d_int, u_int, b_int, P_IN, Q_IN, X_IN);
+
+  [w_int, k_int, v_int, d_int, u_int, b_int] = ntm_fnn_trainer(X_IN, R_OUT, XI_OUT, RHO_OUT, H_OUT, LENGTH_IN);
+
+  [Y_OUT, R_OUT, XI_OUT, RHO_OUT, H_OUT]= dnc_interface_top(w_int, k_int, v_int, d_int, u_int, b_int, P_IN, Q_IN, X_IN);
+end

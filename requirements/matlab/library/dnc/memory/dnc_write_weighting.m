@@ -1,3 +1,4 @@
+%{
 ###################################################################################
 ##                                            __ _      _     _                  ##
 ##                                           / _(_)    | |   | |                 ##
@@ -9,14 +10,14 @@
 ##                  |_|                                                          ##
 ##                                                                               ##
 ##                                                                               ##
-##              Peripheral for MPSoC                                             ##
-##              Multi-Processor System on Chip                                   ##
+##              Peripheral-NTM for MPSoC                                         ##
+##              Neural Turing Machine for MPSoC                                  ##
 ##                                                                               ##
 ###################################################################################
 
 ###################################################################################
 ##                                                                               ##
-## Copyright (c) 2015-2016 by the author(s)                                      ##
+## Copyright (c) 2020-2024 by the author(s)                                      ##
 ##                                                                               ##
 ## Permission is hereby granted, free of charge, to any person obtaining a copy  ##
 ## of this software and associated documentation files (the "Software"), to deal ##
@@ -41,6 +42,31 @@
 ##   Paco Reina Campo <pacoreinacampo@queenfield.tech>                           ##
 ##                                                                               ##
 ###################################################################################
+%}
 
-tree -P '*.m' application > TREE-MATLAB-APPLICATION.txt
-tree -P '*.m' library > TREE-MATLAB-LIBRARY.txt
+function W_OUT = dnc_write_weighting(A_IN, C_IN, GA_IN, GW_IN)
+  % Constants
+  SIZE_N_IN = length(A_IN);
+
+  % Signals
+  vector_ga_int = zeros(SIZE_N_IN, 1);
+  vector_gw_int = zeros(SIZE_N_IN, 1);
+
+  % Body
+  % w(t;j) = gw(t)·(ga(t)·a(t;j) + (1 - ga(t))·c(t;j))
+
+  for j = 1:SIZE_N_IN
+    vector_ga_int(j) = GA_IN;
+    vector_gw_int(j) = GW_IN;
+  end
+
+  vector_cga_int = ones(SIZE_N_IN, 1) - vector_ga_int;
+
+  vector_ga_int = vector_ga_int.*A_IN;
+
+  vector_cga_int = vector_cga_int.*C_IN;
+
+  vector_operation_int = vector_ga_int + vector_cga_int;
+
+  W_OUT = vector_gw_int.*vector_operation_int;
+end
